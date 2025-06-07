@@ -1,57 +1,53 @@
 // src/content.js
-
 import { isSiteRegistered, getTemplate } from './storage.js';
 
 (async () => {
   const url = window.location.href;
-  if (!await isSiteRegistered(url)) {
-    return;  // 登録サイトでなければ動作しない
-  }
+  if (!await isSiteRegistered(url)) return;
 
-  // フォームがDOMに追加されるのを待つ
-  const waitForForm = () => new Promise(resolve => {
-    const existing = document.querySelector('form');
+  // テキストエリアが DOM に出現するのを待つ
+  const waitForTextarea = () => new Promise(resolve => {
+    const existing = document.querySelector('textarea');
     if (existing) {
       resolve(existing);
       return;
     }
-    const mo = new MutationObserver((_, obs) => {
-      const f = document.querySelector('form');
-      if (f) {
+    const observer = new MutationObserver((_, obs) => {
+      const ta = document.querySelector('textarea');
+      if (ta) {
         obs.disconnect();
-        resolve(f);
+        resolve(ta);
       }
     });
-    mo.observe(document.body, { childList: true, subtree: true });
+    observer.observe(document.body, { childList: true, subtree: true });
   });
 
-  const form = await waitForForm();
+  const textarea = await waitForTextarea();
 
-  form.addEventListener('submit', async (e) => {
-    const textarea = form.querySelector('textarea');
-    if (!textarea) return;
+  // Enter キー送信時に置換を実行
+  textarea.addEventListener('keydown', async (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      const original = textarea.value;
+      const lines = original.split(/\r?\n/);
+      const processed = [];
 
-    const original = textarea.value;
-    const lines = original.split(/\r?\n/);
-    const processed = [];
-
-    for (const line of lines) {
-      // 行全体が ;;キーワード の場合にのみ置換
-      const match = line.match(/^;;\s*(\S+)\s*$/);
-      if (match) {
-        const key = match[1];
-        const tpl = await getTemplate(key);
-        if (tpl && tpl.content) {
-          processed.push(...tpl.content.split(/\r?\n/));
-          continue;
+      for (const line of lines) {
+        const match = line.match(/^;;\s*(\S+)\s*$/);
+        if (match) {
+          const key = match[1];
+          const tpl = await getTemplate(key);
+          if (tpl && tpl.content) {
+            processed.push(...tpl.content.split(/\r?\n/));
+            continue;
+          }
         }
+        processed.push(line);
       }
-      processed.push(line);
-    }
 
-    const newText = processed.join('\n');
-    if (newText !== original) {
-      textarea.value = newText;
+      const newText = processed.join('\n');
+      if (newText !== original) {
+        textarea.value = newText;
+      }
     }
   });
 })();
