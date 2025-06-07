@@ -1,0 +1,15 @@
+# Node.js modules
+node_modules/
+
+# Chrome拡張のビルド出力等
+dist/
+build/
+
+# OS 一般
+.DS_Store
+Thumbs.db
+
+# IDE 設定
+.vscode/
+*.sublime-project
+*.sublime-workspace
