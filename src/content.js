@@ -88,6 +88,7 @@
 
       if (result !== original) {
         textarea.value = result;
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
       }
     }
     console.log('keydown handler end');
