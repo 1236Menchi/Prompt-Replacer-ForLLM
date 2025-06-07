@@ -28,25 +28,27 @@ import { isSiteRegistered, getTemplate } from './storage.js';
   textarea.addEventListener('keydown', async (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       const original = textarea.value;
-      const lines = original.split(/\r?\n/);
-      const processed = [];
+      const regex = /;;([^;\r\n]+);;/g;
+      let result = '';
+      let lastIndex = 0;
+      let match;
 
-      for (const line of lines) {
-        const match = line.match(/^;;\s*(\S+)\s*$/);
-        if (match) {
-          const key = match[1];
-          const tpl = await getTemplate(key);
-          if (tpl && tpl.content) {
-            processed.push(...tpl.content.split(/\r?\n/));
-            continue;
-          }
+      while ((match = regex.exec(original)) !== null) {
+        result += original.slice(lastIndex, match.index);
+        const key = match[1];
+        const tpl = await getTemplate(key);
+        if (tpl && tpl.content) {
+          result += tpl.content;
+        } else {
+          result += match[0];
         }
-        processed.push(line);
+        lastIndex = regex.lastIndex;
       }
 
-      const newText = processed.join('\n');
-      if (newText !== original) {
-        textarea.value = newText;
+      result += original.slice(lastIndex);
+
+      if (result !== original) {
+        textarea.value = result;
       }
     }
   });
