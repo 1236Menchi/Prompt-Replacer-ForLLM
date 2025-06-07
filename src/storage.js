@@ -10,9 +10,15 @@ const SITES_KEY     = 'sites';        // 配列: string[]
  * @returns {Promise<{content: string, updated: string} | null>}
  */
 export async function getTemplate(key) {
-  const data = await chrome.storage.local.get(TEMPLATES_KEY);
-  const templates = data[TEMPLATES_KEY] || {};
-  return templates[key] || null;
+  try {
+    const data = await chrome.storage.local.get(TEMPLATES_KEY);
+    const templates = data[TEMPLATES_KEY] || {};
+    return templates[key] || null;
+  } catch (err) {
+    const lastError = chrome.runtime.lastError;
+    if (lastError) console.error(lastError);
+    throw lastError || err;
+  }
 }
 
 /**
@@ -22,10 +28,16 @@ export async function getTemplate(key) {
  * @returns {Promise<void>}
  */
 export async function setTemplate(key, content) {
-  const data = await chrome.storage.local.get(TEMPLATES_KEY);
-  const templates = data[TEMPLATES_KEY] || {};
-  templates[key] = { content, updated: new Date().toISOString() };
-  await chrome.storage.local.set({ [TEMPLATES_KEY]: templates });
+  try {
+    const data = await chrome.storage.local.get(TEMPLATES_KEY);
+    const templates = data[TEMPLATES_KEY] || {};
+    templates[key] = { content, updated: new Date().toISOString() };
+    await chrome.storage.local.set({ [TEMPLATES_KEY]: templates });
+  } catch (err) {
+    const lastError = chrome.runtime.lastError;
+    if (lastError) console.error(lastError);
+    throw lastError || err;
+  }
 }
 
 /**
@@ -33,8 +45,14 @@ export async function setTemplate(key, content) {
  * @returns {Promise<Record<string, {content: string, updated: string}>>}
  */
 export async function getAllTemplates() {
-  const data = await chrome.storage.local.get(TEMPLATES_KEY);
-  return data[TEMPLATES_KEY] || {};
+  try {
+    const data = await chrome.storage.local.get(TEMPLATES_KEY);
+    return data[TEMPLATES_KEY] || {};
+  } catch (err) {
+    const lastError = chrome.runtime.lastError;
+    if (lastError) console.error(lastError);
+    throw lastError || err;
+  }
 }
 
 /**
@@ -43,10 +61,16 @@ export async function getAllTemplates() {
  * @returns {Promise<void>}
  */
 export async function removeTemplate(key) {
-  const data = await chrome.storage.local.get(TEMPLATES_KEY);
-  const templates = data[TEMPLATES_KEY] || {};
-  delete templates[key];
-  await chrome.storage.local.set({ [TEMPLATES_KEY]: templates });
+  try {
+    const data = await chrome.storage.local.get(TEMPLATES_KEY);
+    const templates = data[TEMPLATES_KEY] || {};
+    delete templates[key];
+    await chrome.storage.local.set({ [TEMPLATES_KEY]: templates });
+  } catch (err) {
+    const lastError = chrome.runtime.lastError;
+    if (lastError) console.error(lastError);
+    throw lastError || err;
+  }
 }
 
 /**
@@ -54,11 +78,13 @@ export async function removeTemplate(key) {
  * @returns {Promise<number>}
  */
 export async function getStorageSize() {
-  return new Promise((resolve) => {
-    chrome.storage.local.getBytesInUse(null, (bytes) => {
-      resolve(bytes);
-    });
-  });
+  try {
+    return await chrome.storage.local.getBytesInUse(null);
+  } catch (err) {
+    const lastError = chrome.runtime.lastError;
+    if (lastError) console.error(lastError);
+    throw lastError || err;
+  }
 }
 
 /**
@@ -66,8 +92,14 @@ export async function getStorageSize() {
  * @returns {Promise<string[]>}
  */
 export async function getSites() {
-  const data = await chrome.storage.local.get(SITES_KEY);
-  return data[SITES_KEY] || [];
+  try {
+    const data = await chrome.storage.local.get(SITES_KEY);
+    return data[SITES_KEY] || [];
+  } catch (err) {
+    const lastError = chrome.runtime.lastError;
+    if (lastError) console.error(lastError);
+    throw lastError || err;
+  }
 }
 
 /**
@@ -76,11 +108,17 @@ export async function getSites() {
  * @returns {Promise<void>}
  */
 export async function addSite(urlPattern) {
-  const data = await chrome.storage.local.get(SITES_KEY);
-  const sites = data[SITES_KEY] || [];
-  if (!sites.includes(urlPattern)) {
-    sites.push(urlPattern);
-    await chrome.storage.local.set({ [SITES_KEY]: sites });
+  try {
+    const data = await chrome.storage.local.get(SITES_KEY);
+    const sites = data[SITES_KEY] || [];
+    if (!sites.includes(urlPattern)) {
+      sites.push(urlPattern);
+      await chrome.storage.local.set({ [SITES_KEY]: sites });
+    }
+  } catch (err) {
+    const lastError = chrome.runtime.lastError;
+    if (lastError) console.error(lastError);
+    throw lastError || err;
   }
 }
 
@@ -90,10 +128,16 @@ export async function addSite(urlPattern) {
  * @returns {Promise<void>}
  */
 export async function removeSite(urlPattern) {
-  const data = await chrome.storage.local.get(SITES_KEY);
-  const sites = data[SITES_KEY] || [];
-  const filtered = sites.filter(u => u !== urlPattern);
-  await chrome.storage.local.set({ [SITES_KEY]: filtered });
+  try {
+    const data = await chrome.storage.local.get(SITES_KEY);
+    const sites = data[SITES_KEY] || [];
+    const filtered = sites.filter(u => u !== urlPattern);
+    await chrome.storage.local.set({ [SITES_KEY]: filtered });
+  } catch (err) {
+    const lastError = chrome.runtime.lastError;
+    if (lastError) console.error(lastError);
+    throw lastError || err;
+  }
 }
 
 /**
@@ -102,14 +146,20 @@ export async function removeSite(urlPattern) {
  * @returns {Promise<boolean>}
  */
 export async function isSiteRegistered(url) {
-  const data = await chrome.storage.local.get(SITES_KEY);
-  const sites = data[SITES_KEY] || [];
-  return sites.some(pattern => {
-    // パターンが不正な場合は URLPattern コンストラクタが例外を投げる
-    try {
-      return new URLPattern(pattern).test(url);
-    } catch {
-      return false;
-    }
-  });
+  try {
+    const data = await chrome.storage.local.get(SITES_KEY);
+    const sites = data[SITES_KEY] || [];
+    return sites.some(pattern => {
+      // パターンが不正な場合は URLPattern コンストラクタが例外を投げる
+      try {
+        return new URLPattern(pattern).test(url);
+      } catch {
+        return false;
+      }
+    });
+  } catch (err) {
+    const lastError = chrome.runtime.lastError;
+    if (lastError) console.error(lastError);
+    throw lastError || err;
+  }
 }
