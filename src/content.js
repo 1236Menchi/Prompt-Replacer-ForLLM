@@ -1,7 +1,9 @@
 // src/content.js
-import { isSiteRegistered, getTemplate } from './storage.js';
 
 (async () => {
+  const { isSiteRegistered, getTemplate } =
+    await import(chrome.runtime.getURL('src/storage.js'));
+
   const url = window.location.href;
   if (!await isSiteRegistered(url)) return;
 
