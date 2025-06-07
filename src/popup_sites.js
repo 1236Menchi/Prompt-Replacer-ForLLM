@@ -35,6 +35,13 @@ form.addEventListener('submit', async (e) => {
     messageDiv.textContent = 'パターンを入力してください';
     return;
   }
+  // URLPattern 生成時に例外が出ることがあるため事前に検証
+  try {
+    new URLPattern(pattern);
+  } catch (err) {
+    messageDiv.textContent = '無効なURLパターンです';
+    return;
+  }
   try {
     await addSite(pattern);
     messageDiv.textContent = '登録しました';
