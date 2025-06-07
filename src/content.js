@@ -7,24 +7,36 @@
   const url = window.location.href;
   if (!await isSiteRegistered(url)) return;
 
-  // テキストエリアが DOM に出現するのを待つ
-  const waitForTextarea = () => new Promise(resolve => {
-    const existing = document.querySelector('textarea');
-    if (existing) {
-      resolve(existing);
-      return;
-    }
-    const observer = new MutationObserver((_, obs) => {
-      const ta = document.querySelector('textarea');
-      if (ta) {
-        obs.disconnect();
-        resolve(ta);
+  // テキストエリアが DOM に出現するのを待つ (タイムアウト付き)
+  const waitForTextarea = (timeout = 5000) => {
+    const watcher = new Promise(resolve => {
+      const existing = document.querySelector('textarea');
+      if (existing) {
+        resolve(existing);
+        return;
       }
+      const observer = new MutationObserver((_, obs) => {
+        const ta = document.querySelector('textarea');
+        if (ta) {
+          obs.disconnect();
+          resolve(ta);
+        }
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
     });
-    observer.observe(document.body, { childList: true, subtree: true });
-  });
+
+    const timer = new Promise(resolve => {
+      setTimeout(() => {
+        console.error('waitForTextarea: timed out');
+        resolve(null);
+      }, timeout);
+    });
+
+    return Promise.race([watcher, timer]);
+  };
 
   const textarea = await waitForTextarea();
+  if (!textarea) return;
 
   // Enter キー送信時に置換を実行
   textarea.addEventListener('keydown', async (e) => {
