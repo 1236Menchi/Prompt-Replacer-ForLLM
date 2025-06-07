@@ -16,7 +16,6 @@
       if (existing) {
         resolve(existing);
         return;
-        main
       }
       const observer = new MutationObserver((_, obs) => {
         const ta = document.querySelector('textarea');
