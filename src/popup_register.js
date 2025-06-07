@@ -26,6 +26,10 @@ templateForm.addEventListener('submit', async (e) => {
     messageDiv.textContent = 'キーワードと置換文は必須です';
     return;
   }
+  if (key.includes(';')) {
+    messageDiv.textContent = 'キーワードにセミコロンは使用できません';
+    return;
+  }
   await setTemplate(key, content);
   messageDiv.textContent = '保存しました';
   keywordInput.value = '';
