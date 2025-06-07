@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "ChatGPT Keywords Replacer Custom Edition",
   "version": "0.1.0",
-  "description": "ChatGPT 上で ;;キーワード を完全置換して送信する Chrome 拡張",
+  "description": "ChatGPT 上で ;;キーワード;; トークンを置換して送信する Chrome 拡張",
   "permissions": [
     "storage",
     "activeTab",
