@@ -14,5 +14,7 @@ chrome.webNavigation.onCompleted.addListener(async (details) => {
     } catch (err) {
       console.error('Injection failed for', url, err);
     }
+  } else {
+    console.log('Skipping injection for', url);
   }
 });

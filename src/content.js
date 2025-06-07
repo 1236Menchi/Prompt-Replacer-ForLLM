@@ -43,6 +43,7 @@
       if (existing) {
         attach(existing);
         resolve(existing);
+        return;
       }
       const observer = new MutationObserver(check);
       observer.observe(document.body, { childList: true, subtree: true });
