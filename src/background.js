@@ -10,8 +10,9 @@ chrome.webNavigation.onCompleted.addListener(async (details) => {
         target: { tabId: details.tabId },
         files: ['src/content.js']
       });
+      console.log('Injection succeeded for', url);
     } catch (err) {
-      console.error('Injection failed', err);
+      console.error('Injection failed for', url, err);
     }
   }
 });

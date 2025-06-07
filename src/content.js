@@ -3,9 +3,11 @@
 (async () => {
   const { isSiteRegistered, getTemplate } =
     await import(chrome.runtime.getURL('src/storage.js'));
+  console.log('storage.js imported');
 
   const url = window.location.href;
   if (!await isSiteRegistered(url)) return;
+
 
   // テキストエリアが DOM に出現するのを待つ (タイムアウト付き)
   const waitForTextarea = (timeout = 5000) => {
@@ -14,6 +16,7 @@
       if (existing) {
         resolve(existing);
         return;
+        main
       }
       const observer = new MutationObserver((_, obs) => {
         const ta = document.querySelector('textarea');
@@ -40,6 +43,7 @@
 
   // Enter キー送信時に置換を実行
   textarea.addEventListener('keydown', async (e) => {
+    console.log('keydown handler start');
     if (e.key === 'Enter' && !e.shiftKey) {
       const original = textarea.value;
       const regex = /;;([^;\r\n]+);;/g;
@@ -51,6 +55,7 @@
         result += original.slice(lastIndex, match.index);
         const key = match[1];
         const tpl = await getTemplate(key);
+        console.log('getTemplate', key, tpl);
         if (tpl && tpl.content) {
           result += tpl.content;
         } else {
@@ -65,5 +70,6 @@
         textarea.value = result;
       }
     }
+    console.log('keydown handler end');
   });
 })();
