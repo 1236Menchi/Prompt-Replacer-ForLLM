@@ -8,8 +8,7 @@ chrome.webNavigation.onCompleted.addListener(async (details) => {
     try {
       await chrome.scripting.executeScript({
         target: { tabId: details.tabId },
-        func: (url) => import(url),
-        args: [chrome.runtime.getURL('src/content.js')]
+        files: ['src/content.js']
       });
     } catch (err) {
       console.error('Injection failed', err);
