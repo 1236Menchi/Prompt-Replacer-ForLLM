@@ -3,47 +3,27 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>拡張機能設定</title>
+  <title>テンプレート登録</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>ChatGPT Keywords Replacer</h1>
-
-  <!-- 対象サイト管理セクション -->
-  <section id="site-section">
-    <h2>対象サイト管理</h2>
-    <form id="site-form">
-      <label>
-        URLパターン（ワイルドカード可）:<br>
-        <input type="text" id="site-input" required placeholder="例: https://chatgpt.com/*">
-      </label>
-      <button type="submit">登録</button>
-    </form>
-    <ul id="site-list"></ul>
-    <div id="site-message"></div>
-  </section>
-
-  <!-- テンプレート登録セクション -->
-  <section id="template-section">
-    <h2>テンプレート登録</h2>
-    <form id="template-form">
-      <label>
-        キーワード:<br>
-        <input type="text" id="keyword-input" required placeholder="例: summary-mode">
-      </label><br>
-      <label>
-        置換文:<br>
-        <textarea id="content-input" required rows="6" placeholder="テンプレート内容を入力"></textarea>
-      </label><br>
-      <button type="submit">保存</button>
-    </form>
-    <div id="message"></div>
-    <div>使用中ストレージ: <span id="storage-size">0</span> バイト</div>
-    <button id="view-templates-button">テンプレート一覧</button>
-    <button id="view-sites-button">対象サイト管理</button>
-  </section>
-
+  <h1>テンプレート登録</h1>
+  <form id="template-form">
+    <label>
+      キーワード:<br>
+      <input type="text" id="keyword-input" required placeholder="例: summary-mode">
+    </label><br>
+    <label>
+      置換文:<br>
+      <textarea id="content-input" required rows="6" placeholder="テンプレート内容を入力"></textarea>
+    </label><br>
+    <button type="submit">保存</button>
+  </form>
+  <div id="message"></div>
+  <div>使用中ストレージ: <span id="storage-size">0</span> バイト</div>
+  <button id="view-templates-button">テンプレート一覧</button>
+  <button id="view-sites-button">対象サイト管理</button>
+  
   <script type="module" src="popup_register.js"></script>
 </body>
 </html>
-
