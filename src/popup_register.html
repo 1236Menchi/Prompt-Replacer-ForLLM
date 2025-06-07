@@ -1,0 +1,28 @@
+<!-- src/popup_register.html -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>テンプレート登録</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>テンプレート登録</h1>
+  <form id="template-form">
+    <label>
+      キーワード:<br>
+      <input type="text" id="keyword-input" required placeholder="例: summary-mode">
+    </label><br>
+    <label>
+      置換文:<br>
+      <textarea id="content-input" required rows="6" placeholder="テンプレート内容を入力"></textarea>
+    </label><br>
+    <button type="submit">保存</button>
+  </form>
+  <div id="message"></div>
+  <div>使用中ストレージ: <span id="storage-size">0</span> バイト</div>
+  <button id="view-templates-button">保存されたキーワードへ</button>
+
+  <script type="module" src="popup_register.js"></script>
+</body>
+</html>
