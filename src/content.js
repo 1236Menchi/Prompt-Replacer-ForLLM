@@ -9,42 +9,61 @@
   if (!await isSiteRegistered(url)) return;
 
 
-  // テキストエリアが DOM に出現するのを待つ (タイムアウト付き)
-  const waitForTextarea = (timeout = 5000) => {
+  // テキストエリアを取得し続け、変化があればリスナーを再登録する
+  const waitForTextarea = (handler, timeout = 5000) => {
+    let current = null;
+    let resolved = false;
+
+    const attach = (ta) => {
+      if (current) current.removeEventListener('keydown', handler);
+      current = ta;
+      if (current) current.addEventListener('keydown', handler);
+      if (!resolved) {
+        resolved = true;
+        return true;
+      }
+      return false;
+    };
+
+    const check = () => {
+      const ta = document.querySelector('textarea');
+      if (ta && ta !== current) {
+        if (attach(ta)) resolver(ta);
+      } else if (!ta && current) {
+        // textarea が一旦消えた場合に備え、current をクリア
+        current.removeEventListener('keydown', handler);
+        current = null;
+      }
+    };
+
+    let resolver;
     const watcher = new Promise(resolve => {
+      resolver = resolve;
       const existing = document.querySelector('textarea');
       if (existing) {
+        attach(existing);
         resolve(existing);
-        return;
-        main
       }
-      const observer = new MutationObserver((_, obs) => {
-        const ta = document.querySelector('textarea');
-        if (ta) {
-          obs.disconnect();
-          resolve(ta);
-        }
-      });
+      const observer = new MutationObserver(check);
       observer.observe(document.body, { childList: true, subtree: true });
     });
 
     const timer = new Promise(resolve => {
       setTimeout(() => {
-        console.error('waitForTextarea: timed out');
-        resolve(null);
+        if (!resolved) {
+          console.error('waitForTextarea: timed out');
+          resolve(null);
+        }
       }, timeout);
     });
 
     return Promise.race([watcher, timer]);
   };
 
-  const textarea = await waitForTextarea();
-  if (!textarea) return;
-
-  // Enter キー送信時に置換を実行
-  textarea.addEventListener('keydown', async (e) => {
+  const keydownHandler = async (e) => {
     console.log('keydown handler start');
     if (e.key === 'Enter' && !e.shiftKey) {
+      const textarea = e.target;
       const original = textarea.value;
       const regex = /;;([^;\r\n]+);;/g;
       let result = '';
@@ -71,5 +90,8 @@
       }
     }
     console.log('keydown handler end');
-  });
+  };
+
+  const textarea = await waitForTextarea(keydownHandler);
+  if (!textarea) return;
 })();
