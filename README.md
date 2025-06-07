@@ -38,7 +38,7 @@
 - `content.js` : ChatGPTへの入力置換処理
 - `popup_register.html` / `.js` : キーワードと置換文の登録UI
 - `popup_sites.html` / `.js` : 拡張の動作対象となるURLの管理UI
-- `style.css` : 最小限のスタイル設定
+- `src/style.css` : ポップアップ画面に適用する共通スタイル
 
 
 ## License
