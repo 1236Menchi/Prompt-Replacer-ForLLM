@@ -104,5 +104,12 @@ export async function removeSite(urlPattern) {
 export async function isSiteRegistered(url) {
   const data = await chrome.storage.local.get(SITES_KEY);
   const sites = data[SITES_KEY] || [];
-  return sites.some(pattern => new URLPattern(pattern).test(url));
+  return sites.some(pattern => {
+    // パターンが不正な場合は URLPattern コンストラクタが例外を投げる
+    try {
+      return new URLPattern(pattern).test(url);
+    } catch {
+      return false;
+    }
+  });
 }
