@@ -1,0 +1,14 @@
+{
+  "name": "prompt-replacer-for-llm",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+  },
+  "devDependencies": {
+    "jest": "^29.6.0"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}
