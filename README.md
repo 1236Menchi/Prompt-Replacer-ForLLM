@@ -39,7 +39,7 @@ manifest.json では `<all_urls>` ホスト権限を要求しますが、実際�
 3. 「デベロッパーモード」をONにし、「パッケージ化されていない拡張機能を読み込む」から`MyProject`フォルダを選択
 4. 将来的にWebストアに適用予定
 
-## PrijectStructure
+## Project Structure
 - `manifest.json` : 拡張の設定ファイル（MV3）
 - `content.js` : ChatGPTへの入力置換処理
 - `popup_register.html` / `.js` : キーワードと置換文の登録UI
