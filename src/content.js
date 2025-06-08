@@ -64,10 +64,11 @@
   const isTextarea = (el) => el.tagName === 'TEXTAREA';
 
   const keydownHandler = async (e) => {
-    console.log('keydown handler start');
-    if (e.key === 'Enter' && !e.shiftKey) {
-      const area = e.target;
-      const original = isTextarea(area) ? area.value : area.textContent;
+    console.log('shortcut handler start');
+    // Ctrl+Shift+R を押したときだけ置換処理を実行
+    if (e.ctrlKey && e.shiftKey && e.key === 'R') {
+      const textarea = e.target;
+      const original = textarea.innerText;
       const regex = /;;([^;\r\n]+);;/g;
       let result = '';
       let lastIndex = 0;
@@ -108,7 +109,7 @@
         area.dispatchEvent(new Event('input', { bubbles: true }));
       }
     }
-    console.log('keydown handler end');
+    console.log('shortcut handler end');
   };
 
   const textarea = await waitForTextarea(keydownHandler);
