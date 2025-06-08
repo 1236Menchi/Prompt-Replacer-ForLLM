@@ -26,7 +26,7 @@
     };
 
     const check = () => {
-      const ta = document.querySelector('textarea');
+      const ta = document.querySelector('#prompt-textarea');
       if (ta && ta !== current) {
         if (attach(ta)) resolver(ta);
       } else if (!ta && current) {
@@ -65,7 +65,7 @@
     console.log('keydown handler start');
     if (e.key === 'Enter' && !e.shiftKey) {
       const textarea = e.target;
-      const original = textarea.value;
+      const original = textarea.innerText;
       const regex = /;;([^;\r\n]+);;/g;
       let result = '';
       let lastIndex = 0;
@@ -87,7 +87,7 @@
       result += original.slice(lastIndex);
 
       if (result !== original) {
-        textarea.value = result;
+        textarea.innerHTML = `<p>${result.replace(/\n/g, '</p><p>')}</p>`;
         textarea.dispatchEvent(new Event('input', { bubbles: true }));
       }
     }
