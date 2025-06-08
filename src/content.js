@@ -39,7 +39,7 @@
     let resolver;
     const watcher = new Promise(resolve => {
       resolver = resolve;
-      const existing = document.querySelector('textarea');
+      const existing = document.querySelector('#prompt-textarea');
       if (existing) {
         attach(existing);
         resolve(existing);
@@ -61,25 +61,35 @@
     return Promise.race([watcher, timer]);
   };
 
+  const isTextarea = (el) => el.tagName === 'TEXTAREA';
+
   const keydownHandler = async (e) => {
     console.log('keydown handler start');
     if (e.key === 'Enter' && !e.shiftKey) {
-      const textarea = e.target;
-      const original = textarea.innerText;
+      const area = e.target;
+      const original = isTextarea(area) ? area.value : area.textContent;
       const regex = /;;([^;\r\n]+);;/g;
       let result = '';
       let lastIndex = 0;
       let match;
+
+      const start = isTextarea(area) ? area.selectionStart : 0;
+      const end = isTextarea(area) ? area.selectionEnd : 0;
+      let diffStart = 0;
+      let diffEnd = 0;
 
       while ((match = regex.exec(original)) !== null) {
         result += original.slice(lastIndex, match.index);
         const key = match[1];
         const tpl = await getTemplate(key);
         console.log('getTemplate', key, tpl);
-        if (tpl && tpl.content) {
-          result += tpl.content;
-        } else {
-          result += match[0];
+        const replacement = tpl && tpl.content ? tpl.content : match[0];
+        result += replacement;
+        if (match.index + match[0].length <= start) {
+          diffStart += replacement.length - match[0].length;
+        }
+        if (match.index + match[0].length <= end) {
+          diffEnd += replacement.length - match[0].length;
         }
         lastIndex = regex.lastIndex;
       }
@@ -87,8 +97,15 @@
       result += original.slice(lastIndex);
 
       if (result !== original) {
-        textarea.innerHTML = `<p>${result.replace(/\n/g, '</p><p>')}</p>`;
-        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+        if (isTextarea(area)) {
+          area.value = result;
+          const newStart = start + diffStart;
+          const newEnd = end + diffEnd;
+          area.setSelectionRange(newStart, newEnd);
+        } else {
+          area.textContent = result;
+        }
+        area.dispatchEvent(new Event('input', { bubbles: true }));
       }
     }
     console.log('keydown handler end');
